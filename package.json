@@ -1,0 +1,26 @@
+{
+  "name": "util-dbimport",
+  "version": "1.0.0",
+  "description": "Lambda function to import DynamoDB table data and schema from S3",
+  "main": "dist/handler.js",
+  "type": "module",
+  "scripts": {
+    "build": "bash build.sh",
+    "clean": "rm -rf dist node_modules",
+    "test": "echo \"No tests configured yet\""
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/client-s3": "^3.637.0",
+    "@aws-sdk/util-dynamodb": "^3.637.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^20.11.30"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
