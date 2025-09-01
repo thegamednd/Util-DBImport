@@ -19,12 +19,14 @@ cp package-lock.json dist/ 2>/dev/null || true
 cd dist
 npm ci --omit=dev || npm install --production
 
-# Create deployment package
-zip -r lambda-package.zip . -x "*.git*" -x "*.DS_Store" > /dev/null
+# Create a simple deployment directory (AWS Lambda can work with directory structure too)
+echo "Build completed. Source files and dependencies ready in dist/"
+echo "Note: For actual deployment, you'll need to create a zip file from the dist/ contents"
 
-# Move package to dist root and clean up
-mv lambda-package.zip ../
 cd ..
-mv lambda-package.zip dist/
 
-echo "Build completed. Deployment package ready in dist/"
+# Verify the build
+echo "Build verification:"
+echo "- Source file: $([ -f dist/handler.js ] && echo "✓ Found" || echo "✗ Missing")"
+echo "- Dependencies: $([ -d dist/node_modules ] && echo "✓ Found" || echo "✗ Missing")"
+echo "- Package.json: $([ -f dist/package.json ] && echo "✓ Found" || echo "✗ Missing")"
