@@ -8,23 +8,34 @@ echo "Building Util-DBImport Lambda..."
 rm -rf dist
 mkdir -p dist
 
-# Copy source files
+# Copy source files (already .mjs)
 cp -r src/* dist/
 
-# Copy package files
-cp package.json dist/
-cp package-lock.json dist/ 2>/dev/null || true
+# Create production-only package.json for dist
+cat > dist/package.json << 'EOF'
+{
+  "name": "util-dbimport",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "handler.mjs",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/client-s3": "^3.637.0",
+    "@aws-sdk/util-dynamodb": "^3.637.0"
+  }
+}
+EOF
 
-# Install production dependencies in dist
-cd dist
-npm ci --omit=dev || npm install --production
+# Install only production dependencies in dist
+cd dist && npm install --production --silent --no-package-lock && cd ..
 
-# Create deployment package
-zip -r lambda-package.zip . -x "*.git*" -x "*.DS_Store" > /dev/null
-
-# Move package to dist root and clean up
-mv lambda-package.zip ../
-cd ..
-mv lambda-package.zip dist/
+# Clean up unnecessary files
+cd dist && find node_modules -name "*.md" -delete 2>/dev/null || true && find node_modules -name "*.txt" -delete 2>/dev/null || true && cd ..
 
 echo "Build completed. Deployment package ready in dist/"
+
+# Verify the build
+echo "Build verification:"
+echo "- Handler file: $([ -f dist/handler.mjs ] && echo "✓ Found" || echo "✗ Missing")"
+echo "- Dependencies: $([ -d dist/node_modules ] && echo "✓ Found" || echo "✗ Missing")"
+echo "- Package.json: $([ -f dist/package.json ] && echo "✓ Found" || echo "✗ Missing")"
